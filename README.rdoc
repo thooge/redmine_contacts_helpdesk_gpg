@@ -20,8 +20,8 @@ Install these packages
 
 === Install required GEMs
 
-	gem install gpgme -- --use-system-libraries
-	gem install mail-gpg
+  gem install gpgme -- --use-system-libraries
+  gem install mail-gpg
 
 Please install gpgme with '--use-system-libraries' because otherwise gpgme would compile its own versions of gpg libraries. 
 
@@ -31,13 +31,13 @@ Further development of this plugin expects gpgsm to be available and I hate mixi
 
 Unarchive plugin to redmine/plugins
 
-	rake redmine:plugins RAILS_ENV=production
+  rake redmine:plugins RAILS_ENV=production
 
 
 == Uninstallation
 
-	rake redmine:plugins NAME=redmine_contacts_helpdesk_gpg VERSION=0 RAILS_ENV=production 
-	rm -rf plugins/redmine_contacts_helpdesk_gpg
+  rake redmine:plugins NAME=redmine_contacts_helpdesk_gpg VERSION=0 RAILS_ENV=production 
+  rm -rf plugins/redmine_contacts_helpdesk_gpg
 
 
 == Setup
@@ -53,10 +53,10 @@ Paths in the following examples should be set according to your environment.
 
 Cron jobs should be run as the same user running redmine (e.g. www-data)
 
-	# refresh keys from keyserver on the first day of the month
-	00 00 01 * * cd /var/opt/redmine && /usr/local/bin/rake RAILS_ENV=production redmine:plugins:helpdesk_gpg:refresh_keys
-	# delete expired keys from keystore on the 15th
-	00 00 15 * * cd /var/opt/redmine && /usr/local/bin/rake RAILS_ENV=production redmine:plugins:helpdesk_gpg:remove_expired_keys
+  # refresh keys from keyserver on the first day of the month
+  00 00 01 * * cd /var/opt/redmine && /usr/local/bin/rake RAILS_ENV=production redmine:plugins:helpdesk_gpg:refresh_keys
+  # delete expired keys from keystore on the 15th
+  00 00 15 * * cd /var/opt/redmine && /usr/local/bin/rake RAILS_ENV=production redmine:plugins:helpdesk_gpg:remove_expired_keys
 
 
 == Credits
