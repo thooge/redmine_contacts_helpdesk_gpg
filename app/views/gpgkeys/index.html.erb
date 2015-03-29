@@ -1,0 +1,58 @@
+<div class="contextual">
+<%= link_to l(:label_key_new), new_gpgkeys_path, :class => 'icon icon-add' %>
+<%= link_to l(:label_keys_refresh), gpgkeys_path('refresh'), :class => 'icon icon-reload' %>
+<%= link_to l(:label_keys_remove_expired), gpgkeys_path('expire'), :class => 'icon icon-del' %>
+</div>
+
+<h2><%=l(:label_gpg_keystore)%></h2>
+
+<%= form_tag(gpgkeys_path('filter'), :method => :get) do %>
+<fieldset>
+	<legend><%= l(:label_filter_plural) %></legend>
+	<label for='secretonly'><%= l(:label_gpg_filter_privatekeysonly) %>:</label>
+	<%= check_box_tag 'secretonly', params[:secretonly], params[:secretonly] %>
+	<br/>
+	<label for='expiredonly'><%= l(:label_gpg_filter_expiredkeysonly) %>:</label>
+	<%= check_box_tag 'expiredonly', params[:expiredonly], params[:expiredonly] %>
+	<br/>
+	<label for='name'><%= l(:label_gpg_filter_name) %>:</label>
+	<%= text_field_tag 'name', params[:name], :size => 30 %>
+	<%= submit_tag l(:button_apply), :class => "small", :name => nil %>
+	<%= link_to l(:button_clear), gpgkeys_path, :class => 'icon icon-reload' %>
+</fieldset>
+<% end %>
+&nbsp;
+
+
+<div class="autoscroll">
+<% if @keys.empty? %>
+	<p class="nodata"><%= l(:label_no_data) %></p>
+<% else %>
+	<table class="list" id="gpgkeys">
+	<thead>
+		<tr>
+			<th><%=l(:label_key_uid)%></th>
+			<th><%=l(:label_key_details)%></th>
+			<th><!-- buttons --></th>
+		</tr>
+	</thead>
+	<tbody>
+	<% for key in @keys[@offset,@limit] -%>
+		<tr class="<%= cycle("odd", "even") %>">
+			<td class="<%= key_image(key) %> <%=key_trust(key) %>"><%= key.subkeys[0].length %><%= key.subkeys[0].pubkey_algo_letter %>/<%= key.subkeys[0].fingerprint[-8 .. -1] %></td>
+			<td><%= key_to_string(key) %></td>
+			<td class="buttons">
+				<%= delete_link gpgkeys_path('delete/' + key.subkeys[0].fingerprint, :back_url => gpgkeys_path(params)) %>
+			</td>
+		</tr>
+	<% end -%>
+	</tbody>
+	</table>
+<% end %>	
+</div>
+
+<p class="pagination">
+	<%= pagination_links_full @key_pages, @key_count %>
+</p>
+
+<% html_title(l(:label_gpg_keystore)) -%>

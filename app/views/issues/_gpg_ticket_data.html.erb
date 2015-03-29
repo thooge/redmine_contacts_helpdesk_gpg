@@ -1,0 +1,35 @@
+<% if User.current.allowed_to?(:view_helpdesk_tickets, @project) && @issue.customer  %>
+
+<script type="text/javascript" charset="utf-8">
+	// replace icon for issue
+	function setTicketDataIcon() { 
+		var _s = $("#ticket_data_gpg").children("span")[0];
+		if (_s) {
+			var _t = $("#ticket_data").children("span")[0];
+			$(_t).attr("class", $(_s).attr("class"));
+		}
+	};
+	
+	// replace icon for journal entries (see view journals/_gpg_journal_contact)
+	function setJournalIcons() {
+		$(".journal_message_gpg").each(function () {
+			var _ss = $(this).children("span");
+			if (_ss.length > 0) {
+				var _s = _ss[0];
+				var _t = $(this).prev().children("span")[0];
+				$(_t).attr("class", $(_s).attr("class"));
+			}
+		});
+	}; 
+	
+	$(document).ready(setTicketDataIcon);
+	$(document).ready(setJournalIcons);
+</script>
+
+<div id="ticket_data_gpg" style="display:none;">
+	<% if gpgj = @issue.gpg_journal%>
+	<span class="icon icon-email<% if gpgj.was_signed %>-signed<% end%><% if gpgj.was_encrypted %>-encrypted<% end%>"></span>
+	<% end %>
+</div>
+
+<% end %>

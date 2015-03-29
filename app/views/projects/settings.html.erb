@@ -1,0 +1,11 @@
+<%# display project configuration tabs... %>
+<h2><%=l(:label_settings)%></h2>
+<% tabs = project_settings_tabs %>
+<%= render_tabs tabs %>
+
+<% html_title(l(:label_settings)) -%>
+
+<%# if module contacts is enabled there might be a helpdesk tab we want to extend %>
+<% if @project.module_enabled?(:contacts) && User.current.allowed_to?(:edit_helpdesk_settings, @project) %>
+	<%= render :partial => 'projects/settings/extend_helpdesk_server' %>
+<% end %>	

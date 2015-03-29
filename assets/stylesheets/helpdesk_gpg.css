@@ -1,0 +1,38 @@
+#admin-menu a.gpg-keystore { background-image: url(../images/control_panel_access.png)}
+
+#gpgkeys .gpg_keypair { 
+	padding-left: 20px;
+	background-image: url(../images/gnupg_keys.png);
+	background-repeat: no-repeat;
+	}
+#gpgkeys .gpg_pubkey { 
+	padding-left: 20px;
+	background-image: url(../images/key.png);
+	background-repeat: no-repeat;
+	}
+#gpgkeys .gpg_privkey { 
+	padding-left: 20px;;
+	background-image: url(../images/lock.png);
+	background-repeat: no-repeat;
+	}
+	
+#gpgkeys .expired {
+	text-decoration: line-through;
+}	
+
+#gpgkeys .revoked {
+	text-decoration: line-through;
+	font-style: italic;
+	background-image: url(../images/key_delete.png);
+}
+.icon-email-signed {
+    background-image: url(../images/email_signed.png);
+}
+
+.icon-email-encrypted {
+    background-image: url(../images/email_encrypted.png);
+}
+
+.icon-email-signed-encrypted {
+    background-image: url(../images/email_signed_encrypted.png);
+}

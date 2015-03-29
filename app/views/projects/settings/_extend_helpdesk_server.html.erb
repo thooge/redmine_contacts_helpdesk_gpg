@@ -1,0 +1,42 @@
+<%# define a block for GPG signing options to be inserted after id=helpdesk_answer_from in _helpdesk_general (included from _helpdesk_settings) %>
+<div style="display: none;">
+<span id="gpg_extension_outgoing">
+	<p>
+		<label><%= l(:label_gpg_key) %></label>
+		<%= select_tag :gpg_sign_key, ("<option value=\"\">#{l(:label_no_key)}</option>" + options_for_select(HelpDeskGPG::Helper.privateKeysSelectOptions, HelpdeskSettings[:gpg_sign_key, @project.id])).html_safe %>
+	</p>
+	<p>
+		<label><%= l(:label_gpg_key_password) %></label>
+		<%= link_to_function image_tag('edit.png'), '$(this).hide(); $("#gpg_sign_key_password_field").show()' unless HelpdeskSettings[:gpg_sign_key, @project.id].blank? %>
+		<%= content_tag 'span', :id => "gpg_sign_key_password_field", :style => (HelpdeskSettings[:gpg_sign_key, @project.id].blank? ? nil : 'display:none') do %>
+			<%= password_field_tag :gpg_sign_key_password, '' %>
+		<% end %>
+	</p>
+</span>
+</div>
+
+<%# define a block for GPG decryption options to be inserted before id=test_connection_messages in _helpdesk_server (included from _helpdesk_settings) %>
+<div style="display: none;">
+<span id="gpg_extension_incoming">
+	<p>
+		<label><%= l(:label_gpg_key) %></label>
+		<%= select_tag :gpg_decrypt_key, ("<option value=\"\">#{l(:label_no_key)}</option>" + options_for_select(HelpDeskGPG::Helper.privateKeysSelectOptions, HelpdeskSettings[:gpg_decrypt_key, @project.id])).html_safe %>
+	</p>
+	<p>
+		<label><%= l(:label_gpg_key_password) %></label>
+		<%= link_to_function image_tag('edit.png'), '$(this).hide(); $("#gpg_decrypt_key_password_field").show()' unless HelpdeskSettings[:gpg_decrypt_key, @project.id].blank? %>
+		<%= content_tag 'span', :id => "gpg_decrypt_key_password_field", :style => (HelpdeskSettings[:gpg_decrypt_key, @project.id].blank? ? nil : 'display:none') do %>
+        <%= password_field_tag :gpg_decrypt_key_password, '' %>
+      <% end %>
+	</p>
+</span>
+</div>
+
+
+<%# trigger insertion of above blocks %>
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+		$('#gpg_extension_outgoing').insertAfter($('#helpdesk_answer_from').parent());
+		$('#gpg_extension_incoming').insertBefore($('#test_connection_messages'));
+	});
+</script>

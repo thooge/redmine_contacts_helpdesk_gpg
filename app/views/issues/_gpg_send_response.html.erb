@@ -1,0 +1,38 @@
+<script type="text/javascript" charset="utf-8">
+	function toggleMailOptionsGpg(element){ 
+		var enabled = element != null && element.checked;
+console.log("toggleMailOptionsGpg:enabled?" + enabled);		
+		if (enabled) {
+			$('#helpdesk_send_response_gpg').show();
+		} else {
+			$('#helpdesk_send_response_gpg').hide();
+		}
+	}
+	
+	function gpg_toggleSendMail() {
+		var element = $('#helpdesk_is_send_mail').get(0);
+		toggleSendMail(element); // original helpdesk handler
+		toggleMailOptionsGpg(element);
+		return true;
+	}
+	
+	$(document).ready(function() {
+		// we cannot add another onclick handler since helpdesk used inline 'onclick='
+		// so we're unbinding the inline handler from helpdesk
+		$('#helpdesk_is_send_mail').prop('onclick', null); 
+		// and then bind another one (wrapping the original handler and our addition)
+		$('#helpdesk_is_send_mail').bind('click',gpg_toggleSendMail);
+	});
+
+</script>
+
+
+<div id="helpdesk_send_response_gpg" style="display:none;">
+	<%= check_box_tag 'helpdesk[gpg_do_encrypt]', 1, false %>
+	<label for="gpg_do_encrypt"><%= l(:label_gpg_do_encrypt) %></label>
+	<% unless HelpdeskSettings[:gpg_sign_key, @project].blank? %>
+		<%= check_box_tag 'helpdesk[gpg_do_sign]', 1, false %>
+		<%= label_tag :gpg_do_sign, l(:label_gpg_do_sign) %>
+		(0x<%=HelpDeskGPG::Helper.shortenFingerprint(HelpdeskSettings[:gpg_sign_key, @project.id]) %>)
+	<% end %>
+</div>

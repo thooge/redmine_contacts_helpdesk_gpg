@@ -1,0 +1,33 @@
+de:
+  label_ggp_setting: GPG Konfiguration
+  label_gpg_keystore: GPG Schlüsselverwaltung
+  label_gpg_gpgme_api: GPGME Schnittstellenversi0on
+  label_gpg_protocols: GPGME Protokolle 
+  label_gpg_engines: GPGME Engines 
+  label_gpg_keystore_info: Schlüsselbund Informationen 
+  msg_gpg_keystore_info: "%{pub} öffentliche, %{priv} private Schlüssel gefunden"
+
+  setting_gpg_keyrings_dir: Verzeichnis der Schlüsselbunde
+  setting_gpg_keyserver: Adresse des Schlüsselservers
+  
+  label_key_new: Schlüssel importieren
+  label_keys_refresh: Vom Keyserver aktualisieren
+  label_keys_remove_expired: Abgelaufene Schlüssel entfernen
+  label_key_uid: Id
+  label_key_details: Details
+  label_key_expires: verfällt
+  label_key_expires_never: niemals
+  
+  label_no_key: (keine Auswahl)
+  label_gpg_key: GPG Schlüssel
+  label_gpg_key_password: GPG Passwort
+  label_gpg_filter_name: Name
+  label_gpg_filter_privatekeysonly: Nur private Schlüssel
+  label_gpg_filter_expiredkeysonly: Nur abgelaufene Schlüssel
+  
+  label_gpg_do_sign: Signiere Mail mit
+  label_gpg_do_encrypt: Verschlüssele Mail
+
+  msg_gpg_keys_updated: Schlüssel wurden aktualisiert.
+  msg_gpg_keys_imported: "Es wurden %{pub} öffentliche und %{priv} private Schlüssel importiert."
+  msg_gpg_keys_expired: "%{cnt} abgelaufene Schlüssel wurden entfernt."

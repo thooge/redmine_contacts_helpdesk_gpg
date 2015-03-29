@@ -1,0 +1,7 @@
+<% if User.current.allowed_to?(:view_helpdesk_tickets, @project) && journal.contact %>
+<div class="journal_message_gpg" style="display:none;">
+	<% if journal.gpg_journal %>
+		<span class="icon icon-email<% if journal.was_signed? %>-signed<% end%><% if journal.was_encrypted? %>-encrypted<% end%>"></span>
+	<% end %>
+</div>
+<% end %>

@@ -1,0 +1,13 @@
+<h2><%=l(:label_gpg_keystore)%></h2>
+<h3><%=l(:label_key_new)%></h3>
+
+<%= form_tag(gpgkeys_path('import'), :html => { :id => 'gpgkey-import-form', :multipart => true } ) do %>
+
+	<div class="box tabular">
+		<p id="attachments_form"><label><%= l(:label_attachment_plural) %></label><%= render :partial => 'attachments/form', :locals => {:container => @gpgkeys} %></p>
+	</div>
+
+	<%= submit_tag l(:button_create) %>
+	<%= link_to l(:button_cancel), gpgkeys_path %>
+
+<% end %>

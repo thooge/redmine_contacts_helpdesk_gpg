@@ -1,0 +1,33 @@
+en:
+  label_ggp_setting: GPG Configuration
+  label_gpg_keystore: GPG Key management
+  label_gpg_gpgme_api: GPGME Interface 
+  label_gpg_protocols: GPGME Protocols 
+  label_gpg_engines: GPGME Engines 
+  label_gpg_keystore_info: Key store information
+  msg_gpg_keystore_info: "Found %{pub} public keys / %{priv} secret keys"
+
+  setting_gpg_keyrings_dir: Directory containing key rings
+  setting_gpg_keyserver: URL of public key server
+
+  label_key_new: Import a key
+  label_keys_refresh: Refresh from Keyserver
+  label_keys_remove_expired: Remove expired keys
+  label_key_uid: Id
+  label_key_details: Details
+  label_key_expires: expires
+  label_key_expires_never: never
+
+  label_no_key: (nothing)
+  label_gpg_key: GPG key
+  label_gpg_key_password: GPG password
+  label_gpg_filter_name: Name
+  label_gpg_filter_privatekeysonly: Only private keys
+  label_gpg_filter_expiredkeysonly: Only expired keys
+  
+  label_gpg_do_sign: Sign mail with
+  label_gpg_do_encrypt: Encrypt mail
+  
+  msg_gpg_keys_updated: Keys have been updated.
+  msg_gpg_keys_imported: "%{pub} public keys and %{priv} secrest keys have been imported."
+  msg_gpg_keys_expired: "%{cnt} expired keys have been removed."

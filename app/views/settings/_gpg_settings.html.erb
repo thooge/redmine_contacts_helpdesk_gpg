@@ -1,0 +1,32 @@
+<table class="list">
+	<tr>
+		<td><%=l(:label_gpg_gpgme_api)%></td>
+		<td>'<%=GPGME::gpgme_check_version(nil)%>'</td>
+	</tr>
+	<tr>
+		<td><%=l(:label_gpg_protocols)%></td>
+		<td>OpenPGP:&nbsp;<%= image_tag((GPGME::Engine.check_version(GPGME::PROTOCOL_OpenPGP) ? 'true.png' : 'exclamation.png'), :style => "vertical-align:bottom;") %>
+		&nbsp;CMS:&nbsp;<%= image_tag((GPGME::Engine.check_version(GPGME::PROTOCOL_CMS) ? 'true.png' : 'exclamation.png'), :style => "vertical-align:bottom;") %>
+		</td>
+	</tr>
+	<tr>
+		<td><%=l(:label_gpg_engines)%></td>
+		<td><% for _info in HelpDeskGPG::Helper.engineInfos -%><%= _info %><br/><% end -%></td>
+	</tr>
+	<tr>
+		<td><%=l(:label_gpg_keystore_info)%></td>
+		<td><% _keys = HelpDeskGPG::Helper.keystoresize %><%=t 'msg_gpg_keystore_info', pub: _keys[0], priv: _keys[1] %></td>
+	</tr>
+</table>
+<br />
+<br />
+<p>
+  <%= setting_label(:gpg_keyrings_dir) %>
+  <%= text_field_tag "settings[gpg_keyrings_dir]", @settings[:gpg_keyrings_dir], :size => "98%" %>
+</p>
+<p>
+  <%= setting_label(:gpg_keyserver) %>
+  <%= text_field_tag "settings[gpg_keyserver]", @settings[:gpg_keyserver], :size => "98%" %>
+</p>
+
+<% html_title(l(:label_settings), l(:label_ggp_setting)) -%>

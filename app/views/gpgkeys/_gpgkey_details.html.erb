@@ -1,0 +1,11 @@
+﻿<%= primary_subkey.timestamp.strftime('%Y-%m-%d') %> [<%=l(:label_key_expires)%>: <%= primary_subkey.expires.to_i == 0 ? l(:label_key_expires_never) : primary_subkey.expires.strftime('%Y-%m-%d') %>]
+<% for user_id in uids %>
+	<br/>
+	uid <%=user_id.name%> &lt;<%=user_id.email%>&gt;
+<% end %>
+<% for subkey in subkeys %>
+	<br/>
+	sub <%= subkey.length %><%= subkey.pubkey_algo_letter %>/<%= subkey.fingerprint[-8 .. -1] %>
+		<%= subkey.timestamp.strftime('%Y-%m-%d') %> [<%=l(:label_key_expires)%>: <%= subkey.expires.to_i == 0 ? l(:label_key_expires_never) : subkey.expires.strftime('%Y-%m-%d') %>]
+<% end %>	
+
