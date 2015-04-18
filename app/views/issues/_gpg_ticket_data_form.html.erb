@@ -1,0 +1,27 @@
+<% if @issue.new_record? && !@copy_from && User.current.allowed_to?(:edit_helpdesk_tickets, @project) && @issue.tracker_id.to_s == HelpdeskSettings[:helpdesk_tracker, @project.id] %>
+
+<%# define blocks for GPG options to be inserted into helpdesks _ticket_data_form%>
+<div style="display:none;">
+    <div id="helpdesk_send_response_gpg">
+        <div id="helpdesk_send_response_gpg_encrypted">
+            <%= check_box_tag 'helpdesk[gpg_do_encrypt]', 1, false %>
+            <label for="gpg_do_encrypt"><%= l(:label_gpg_do_encrypt) %></label>
+        </div>
+        <div id="helpdesk_send_response_gpg_signed">
+            <%= check_box_tag 'helpdesk[gpg_do_sign]', 1, false %>
+            <%= label_tag :gpg_do_sign, l(:label_gpg_do_sign) %>(0x<%=HelpDeskGPG::Helper.shortenFingerprint(HelpdeskSettings[:gpg_sign_key, @project.id]) %>)
+        </div>
+    </div>
+</div>
+
+<%# some js to put above blocks at the right place %>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+        $('#all_attributes').find('div.splitcontentright').append($('#helpdesk_send_response_gpg'));
+        <% if HelpdeskSettings[:gpg_sign_key, @project].blank? %>
+            $('#helpdesk_send_response_gpg_signed').hide();
+        <% end %>
+    });
+</script>
+
+<% end %>

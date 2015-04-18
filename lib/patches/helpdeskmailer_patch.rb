@@ -23,6 +23,7 @@ module RedmineHelpdeskGPG
 					alias_method_chain :receive_issue_reply, :gpg
 					# outgoing mail; set options for gpg encryption/signature
 					alias_method_chain :issue_response, :gpg
+					alias_method_chain :initial_message, :gpg
 
 				end
 			end # self.included
@@ -81,6 +82,43 @@ module RedmineHelpdeskGPG
 					initGPGSettings
 					_gpg_journal_options = {:encrypted => false, :signed => false}
 					_gpg_options = {}
+					setGPGOptionsFromParams(journal.issue.project, params, _gpg_journal_options, _gpg_options)
+					
+					# logger.info "issue_response_with_gpg: set gpg options: #{_gpgOptions}"
+					mail gpg: _gpg_options unless _gpg_options.empty?
+					saveGpgJournal(journal, _gpg_journal_options)
+					
+					# finally let helpdesk compose the mail and send it (including any gpg options set)
+					return issue_response_without_gpg(contact, journal, params)
+					
+				end #def issue_response_with_gpg
+
+				# A new ticket has been created and a mail is to be sent to customer. Might want to set gpg encryption/signing params
+				def initial_message_with_gpg(contact, issue, params)
+					initGPGSettings
+					_gpg_journal_options = {}
+					_gpg_options = {}
+					setGPGOptionsFromParams(issue.project, params, _gpg_journal_options, _gpg_options)
+
+					# let helpdesk compose the mail and send it (including any gpg options set)
+					mail gpg: _gpg_options unless _gpg_options.empty?
+					_result = initial_message_without_gpg(contact, issue, params)
+					# save journal if no error occurred
+					saveGpgJournal(issue, _gpg_journal_options)
+					return _result
+				end #def issue_response_with_gpg
+				
+				## private methods
+				private
+				
+				def initGPGSettings
+					ENV.delete('GPG_AGENT_INFO')
+					ENV['GNUPGHOME'] = HelpDeskGPG.keyrings_dir
+					GPGME::Engine.home_dir = HelpDeskGPG.keyrings_dir
+					@hkp = Hkp.new(HelpDeskGPG.keyserver)
+				end # initGPGSettings
+
+				def setGPGOptionsFromParams(project, params, gpg_journal_options, gpg_options)
 					# first set any gpg option for the mail
 					# shall we encrypt the message?
 					if params[:helpdesk][:gpg_do_encrypt]
@@ -92,39 +130,20 @@ module RedmineHelpdeskGPG
 						_receivers += params[:helpdesk][:bcc_list].split(',') if params[:helpdesk][:bcc_list]
 						_missing_keys = missingKeysForEncryption(_receivers)
 						if _missing_keys.empty? # all keys are available :)
-							_gpg_options[:encrypt] = true
-							_gpg_journal_options[:encrypted] = true
+							gpg_options[:encrypt] = true
+							gpg_journal_options[:encrypted] = true
 						else
 							raise MailHandler::MissingInformation.new("Cannot encrypt message. No public key for #{_missing_keys}")
 						end
 					end
 					if params[:helpdesk][:gpg_do_sign] ## shall we sign the message?
 						#logger.info "issue_response_with_gpg: We shall sign the mail with passphrase '#{HelpdeskSettings[:gpg_sign_key_password, journal.issue.project]}'"
-						_gpg_options[:sign_as] = HelpdeskSettings[:gpg_sign_key, journal.issue.project]
-						_gpg_options[:password] = HelpdeskSettings[:gpg_sign_key_password, journal.issue.project]
-						_gpg_journal_options[:signed] = true
+						gpg_options[:sign_as] = HelpdeskSettings[:gpg_sign_key, project]
+						gpg_options[:password] = HelpdeskSettings[:gpg_sign_key_password, project]
+						gpg_journal_options[:signed] = true
 					end
-					
-					# logger.info "issue_response_with_gpg: set gpg options: #{_gpgOptions}"
-					mail gpg: _gpg_options unless _gpg_options.empty?
-					saveGpgJournal(journal, _gpg_journal_options)
-					
-					# finally let helpdesk compose the mail and send it (including any gpg options set)
-					return issue_response_without_gpg(contact, journal, params)
-					
-				end #def issue_response_with_gpg
-				
-				
-				## private methods
-				private
-				
-				def initGPGSettings
-					ENV.delete('GPG_AGENT_INFO')
-					ENV['GNUPGHOME'] = HelpDeskGPG.keyrings_dir
-					GPGME::Engine.home_dir = HelpDeskGPG.keyrings_dir
-					@hkp = Hkp.new(HelpDeskGPG.keyserver)
-				end # initGPGSettings
-				
+				end #def setGPGOptionsFromParams
+
 				def checkAndOptionallyImportKey(_mailaddress)
 					_keys = GPGME::Key.find(:public, _mailaddress)
 					if _keys.empty?
