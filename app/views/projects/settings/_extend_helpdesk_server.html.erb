@@ -12,6 +12,10 @@
 			<%= password_field_tag :gpg_sign_key_password, '' %>
 		<% end %>
 	</p>
+    <p>
+        <label><%= l(:label_gpg_action) %></label>
+        <%= select_tag :gpg_send_default_action, options_for_select(HelpDeskGPG::Helper.sendDefaultsSelectOptions, HelpdeskSettings[:gpg_send_default_action, @project.id]) %> </p>
+    </p>
 </span>
 </div>
 

@@ -28,10 +28,10 @@ console.log("toggleMailOptionsGpg:enabled?" + enabled);
 
 
 <div id="helpdesk_send_response_gpg" style="display:none;">
-	<%= check_box_tag 'helpdesk[gpg_do_encrypt]', 1, false %>
+	<%= check_box_tag 'helpdesk[gpg_do_encrypt]', 1, HelpDeskGPG::Helper.sendMailEncryptedByDefault(@project) %>
 	<label for="gpg_do_encrypt"><%= l(:label_gpg_do_encrypt) %></label>
 	<% unless HelpdeskSettings[:gpg_sign_key, @project].blank? %>
-		<%= check_box_tag 'helpdesk[gpg_do_sign]', 1, false %>
+		<%= check_box_tag 'helpdesk[gpg_do_sign]', 1, HelpDeskGPG::Helper.sendMailSignedByDefault(@project) %>
 		<%= label_tag :gpg_do_sign, l(:label_gpg_do_sign) %>
 		(0x<%=HelpDeskGPG::Helper.shortenFingerprint(HelpdeskSettings[:gpg_sign_key, @project.id]) %>)
 	<% end %>

@@ -24,6 +24,8 @@ module RedmineHelpdeskGPG
 
 					set_settings_param(:gpg_sign_key)
 					set_settings_param(:gpg_sign_key_password)
+
+					set_settings_param(:gpg_send_default_action)
 					
 					set_settings_without_gpg # call original method
 				end #def set_settings_gpg

@@ -18,6 +18,11 @@ en:
   label_key_expires: expires
   label_key_expires_never: never
 
+  label_gpg_action: GPG default when sending mails
+  label_gpg_action_sign: Sign
+  label_gpg_action_encrypt: Encrypt
+  label_gpg_action_both: Sign&Encrypt
+
   label_no_key: (nothing)
   label_gpg_key: GPG key
   label_gpg_key_password: GPG password

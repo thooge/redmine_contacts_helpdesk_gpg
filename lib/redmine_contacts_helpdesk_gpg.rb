@@ -65,7 +65,23 @@ module HelpDeskGPG
 		def self.shortenFingerprint(fpr)
 			fpr[-8 .. -1]
 		end # self.shortenFingerprint
-	
+
+		def self.sendDefaultsSelectOptions
+			[[(I18n.translate :label_no_key), ''],
+			 [(I18n.translate :label_gpg_action_sign), '1'],
+			 [(I18n.translate :label_gpg_action_encrypt), '2'],
+			 [(I18n.translate :label_gpg_action_both), '3']
+			]
+		end # sendDefaultsSelectOptions
+
+		def self.sendMailSignedByDefault(project)
+			HelpdeskSettings[:gpg_send_default_action, project.id].to_i & 1 > 0
+		end #sendMailSignedByDefault
+
+		def self.sendMailEncryptedByDefault(project)
+			HelpdeskSettings[:gpg_send_default_action, project.id].to_i & 2 > 0
+		end #sendMailEncryptedByDefault
+
 	end # class Helper
 
 end # module HelpDeskGPG

@@ -18,6 +18,11 @@ de:
   label_key_expires: verfällt
   label_key_expires_never: niemals
   
+  label_gpg_action: GPG default beim Versenden
+  label_gpg_action_sign: Signieren
+  label_gpg_action_encrypt: Verschlüsseln
+  label_gpg_action_both: Signieren&Verschlüsseln
+
   label_no_key: (keine Auswahl)
   label_gpg_key: GPG Schlüssel
   label_gpg_key_password: GPG Passwort
