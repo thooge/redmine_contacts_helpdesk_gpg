@@ -1,19 +1,103 @@
 <script type="text/javascript" charset="utf-8">
+
+	var checkedGPGKeys = new Object();
+	
 	function toggleMailOptionsGpg(element){ 
+		// "send response via mail" has been toggled
 		var enabled = element != null && element.checked;
-console.log("toggleMailOptionsGpg:enabled?" + enabled);		
 		if (enabled) {
 			$('#helpdesk_send_response_gpg').show();
+			showContactGPGHint();
 		} else {
 			$('#helpdesk_send_response_gpg').hide();
 		}
 	}
 	
+	function showGPGHints() {
+		if ($($('a.inline-edit.email-template').get(0)).is(":visible")) {
+			showContactGPGHint();
+		}
+		showTagsGPGHint();
+	}
+	
+	function showContactGPGHint() {
+		// check key for tickets' primary contact
+		var enabled = isGPGEncryptionEnabled();
+		if (enabled) {
+			var mailadr = $($('#customer_to_email').contents().filter(function () { return this.nodeType === 3; })[1]).text().match(/\b(\S[^\(])(.+)(?=\))/g);
+			checkGPGKeyFor(mailadr, $('span.contact', '#customer_to_email'));
+		} else {
+			$('span.contact', '#customer_to_email').removeClass('recipient-check-key recipient-has-key recipient-has-no-key');
+		}
+	}
+	
+	function showTagsGPGHint() {
+		// check existing 'tagged' adresses
+		if (isGPGEncryptionEnabled()) {
+			// find existing ones and check them
+			$('ul.tagit').find($('span.tagit-label')).each(function() {
+				checkGPGKeyFor($(this).text(), $(this));
+			});
+		} else {
+			$('ul.tagit').find($('span.tagit-label')).each(function() {
+				$(this).removeClass('recipient-check-key recipient-has-key recipient-has-no-key');
+			});
+		}
+	}
+
+	function checkGPGKeyFor(adr, element) {
+		element.addClass('recipient-check-key');
+		function setHint(data) {
+			// Sets css style of an element according to result of (previous) check.
+			element.removeClass('recipient-check-key');
+			element.addClass(('true' == data) ? 'recipient-has-key' : 'recipient-has-no-key');
+		};
+		var previousResult = checkedGPGKeys[adr];
+		if (previousResult) {
+			setHint(previousResult);
+		} else {
+			// ajax call for checking availability of a key. 
+			$.get( '../gpgkeys/query?id=' + adr, 
+				function(data) {
+					checkedGPGKeys[adr] = data;
+					setHint(data);
+				});
+		}
+	}
+
 	function gpg_toggleSendMail() {
 		var element = $('#helpdesk_is_send_mail').get(0);
 		toggleSendMail(element); // original helpdesk handler
 		toggleMailOptionsGpg(element);
 		return true;
+	}
+	
+	function clickedEditMailAdresses() {
+		var element = $($('a.inline-edit.email-template').get(0));
+		// original handler	
+		$('#customer_to_email').hide(); element.hide(); $('#cc_list_edit').show(); $('#helpdesk_is_cc').val(1);
+		// additionally
+		showTagsGPGHint();
+		// do not reload after click on link
+		return false; 
+	}
+		
+	
+	function isGPGEncryptionEnabled() {
+		var _checkbox = $('#helpdesk_gpg_do_encrypt').get(0);
+		return _checkbox != null && _checkbox.checked;
+	}
+	
+	function setupCheckForTags() {
+		$([$('#helpdesk_to'), $('#helpdesk_cc'), $('#helpdesk_cc')]).each(function() {
+			$(this).tagit({
+				afterTagAdded: function(evt, ui) {
+					if (!ui.duringInitialization & isGPGEncryptionEnabled()) {
+						checkGPGKeyFor(ui.tagLabel, $(ui.tag).find($('span.tagit-label')));
+					};
+				}
+			});
+		});
 	}
 	
 	$(document).ready(function() {
@@ -22,6 +106,17 @@ console.log("toggleMailOptionsGpg:enabled?" + enabled);
 		$('#helpdesk_is_send_mail').prop('onclick', null); 
 		// and then bind another one (wrapping the original handler and our addition)
 		$('#helpdesk_is_send_mail').bind('click',gpg_toggleSendMail);
+		
+		// same problem for the 'Edit' anchor
+		$('a.inline-edit.email-template').prop('onclick', null); 
+		// and then bind another one (wrapping the original handler and our addition)
+		$('a.inline-edit.email-template').bind('click',clickedEditMailAdresses);
+		
+		// add click handler for checking keys when encryption is enabled
+		$('#helpdesk_gpg_do_encrypt').bind('click',showGPGHints);
+		
+		// add handler(s) for new mail adresses which are edited inline
+		setupCheckForTags();
 	});
 
 </script>

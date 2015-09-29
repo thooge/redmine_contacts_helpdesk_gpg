@@ -143,4 +143,73 @@ class GpgKeys
 	def self.keyExpiredOrRevoked(_key)
 		 _key.expired || _key.subkeys[0].trust == :revoked
 	end # keyExpiredOrRevoked
+	
+	def self.checkAndOptionallyImportKey(_mailaddress)
+		# check existence of key for '_mailaddress'. Return a boolean whether we found it
+		_keys = GPGME::Key.find(:public, _mailaddress)
+		if _keys.empty?
+			# logger.info "checkAndOptionallyImportKey: Doing hkp lookup for key '#{_mailaddress}'"
+			_found = @@hkp.search(_mailaddress)
+			if _found 
+				_found.each { |result|
+					_keyid = result[0]
+					_key = @@hkp.fetch_and_import(_keyid)
+				}
+			end
+			_keys = GPGME::Key.find(:public, _mailaddress)
+		end
+		not _keys.empty?
+	rescue Exception ## probably key not found or some other error while retrieving data from hkp
+		return false
+	end# def checkAndOptionallyImportKey
+				
+	def self.missingKeysForEncryption(_receivers)
+		# collect any key from list '_receivers' which we cannot encrypt to
+		_missing = []
+		for r in _receivers do
+			_missing.push(r) unless self.hasKeyForEncryption?(r)
+		end
+		_missing
+	end # def missingKeysForEncryption
+	
+	def self.hasKeyForEncryption?(_mailaddress)
+		# already in store?
+		if self.exactKeyAvailable?(_mailaddress, :encrypt)
+			return true
+		end
+		# nope. Lookup from key server
+		self.getKeyFromKeyServer(_mailaddress)
+		# now in store?
+		return self.exactKeyAvailable?(_mailaddress, :encrypt)
+	end # def hasKeyForEncryption?
+	
+	def self.exactKeyAvailable?(_mailaddress, purpose)
+		# lookup a key from store and check if its usable for 'purpose'
+		_keys = GPGME::Key.find(:public, _mailaddress, [purpose])
+		_keys.each { |_key|
+			_key.uids.each { |_uid|
+				if _uid.email.downcase == _mailaddress.downcase then
+					return true
+				end
+			}
+		}
+		return false
+	end # def exactKeyAvailable?
+	
+	def self.getKeyFromKeyServer(_mailaddress)
+		# lookup key from keyserver and import into store if found
+		begin
+			_found = @@hkp.search(_mailaddress)
+			if _found 
+				_found.each { |result|
+					_keyid = result[0]
+					@@hkp.fetch_and_import(_keyid)
+				}
+			end
+		rescue #catch OpenURI::HTTPError 404 for keys not on key server
+			Rails.logger.info "Gpgkeys#getKeyFromKeyServer caught error on #{_mailaddress}"
+		end
+	end # def getKeyFromKeyServer
+				
+
 end

@@ -4,9 +4,7 @@ class GpgkeysController < ApplicationController
 
 	unloadable
 	layout 'admin'
-	before_filter :require_admin
-	##before_filter :require_admin, :except => :show
-	##before_filter :find_key, :only => [:show, :edit, :update, :destroy]
+	before_filter :require_admin, :except => :query
 
 	def initialize
 		super()
@@ -28,6 +26,14 @@ class GpgkeysController < ApplicationController
 
 		render :layout => !request.xhr?
 	end # index
+	
+	def query
+		# logger.info "Gpgkeys#query, params=#{params}"
+		(render_400; return false) unless params['id']
+		_found = GpgKeys.hasKeyForEncryption?(params['id'])
+		expires_now
+		render text: _found
+	end # query
 	
 	def create
 		# Cannot really create a key here. But we can import from file... 

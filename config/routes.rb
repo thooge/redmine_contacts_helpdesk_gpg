@@ -1,6 +1,7 @@
 match 'gpgkeys.import', :to => 'gpgkeys#import'
 match 'gpgkeys.refresh', :to => 'gpgkeys#refresh'
 match 'gpgkeys.expire', :to => 'gpgkeys#expire'
+match 'gpgkeys/query', :to => 'gpgkeys#query'
 
 match 'gpgkeys', :to => 'gpgkeys#index'
 match 'gpgkeys/', :to => 'gpgkeys#index'

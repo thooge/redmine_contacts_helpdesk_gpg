@@ -1,5 +1,6 @@
 require 'gpgme'
 require 'mail-gpg'
+require 'gpgkeys'
 require_dependency 'helpdesk_mailer'
 require_dependency 'redmine_contacts_helpdesk_gpg'
 
@@ -46,7 +47,7 @@ module RedmineHelpdeskGPG
 						# logger.info "receive_with_gpg: message signed by: #{_decrypted.signatures.map{|sig|sig.from}.join("\n")}"
 						email = Mail.new(_decrypted)
 					elsif email.signed?
-						_have_key = checkAndOptionallyImportKey(_sender_email)
+						_have_key = GpgKeys.checkAndOptionallyImportKey(_sender_email)
 						if _have_key
 							_verified = email.verify
 							# logger.info "receive_with_gpg: signature(s) valid: #{_verified.signature_valid?}"
@@ -115,7 +116,6 @@ module RedmineHelpdeskGPG
 					ENV.delete('GPG_AGENT_INFO')
 					ENV['GNUPGHOME'] = HelpDeskGPG.keyrings_dir
 					GPGME::Engine.home_dir = HelpDeskGPG.keyrings_dir
-					@hkp = Hkp.new(HelpDeskGPG.keyserver)
 				end # initGPGSettings
 
 				def setGPGOptionsFromParams(project, params, gpg_journal_options, gpg_options)
@@ -128,7 +128,7 @@ module RedmineHelpdeskGPG
 						_receivers += params[:helpdesk][:to_address].split(',') if params[:helpdesk][:to_address]
 						_receivers += params[:helpdesk][:cc_list].split(',') if params[:helpdesk][:cc_list]
 						_receivers += params[:helpdesk][:bcc_list].split(',') if params[:helpdesk][:bcc_list]
-						_missing_keys = missingKeysForEncryption(_receivers)
+						_missing_keys = GpgKeys.missingKeysForEncryption(_receivers)
 						if _missing_keys.empty? # all keys are available :)
 							gpg_options[:encrypt] = true
 							gpg_journal_options[:encrypted] = true
@@ -144,62 +144,6 @@ module RedmineHelpdeskGPG
 					end
 				end #def setGPGOptionsFromParams
 
-				def checkAndOptionallyImportKey(_mailaddress)
-					_keys = GPGME::Key.find(:public, _mailaddress)
-					if _keys.empty?
-						# logger.info "checkAndOptionallyImportKey: Doing hkp lookup for key '#{_mailaddress}'"
-						_found = @hkp.search(_mailaddress)
-						if _found 
-							_found.each { |result|
-								_keyid = result[0]
-								_key = @hkp.fetch_and_import(_keyid)
-							}
-						end
-						_keys = GPGME::Key.find(:public, _mailaddress)
-					end
-					not _keys.empty?
-				rescue Exception ## probably key not found or some other error while retrieving data from hkp
-					return false
-				end# def checkAndOptionallyImportKey
-				
-				def missingKeysForEncryption(_receivers)
-					_missing = []
-					for r in _receivers do
-						_missing.push(r) unless hasKeyForEncryption?(r)
-					end
-					_missing
-				end # def missingKeysForEncryption
-				
-				def hasKeyForEncryption?(_mailaddress)
-					if exactKeyAvailable?(_mailaddress, :encrypt)
-						return true
-					end
-					getKeyFromKeyServer(_mailaddress)
-					return exactKeyAvailable?(_mailaddress, :encrypt)
-				end # def hasKeyForEncryption?
-				
-				def exactKeyAvailable?(_mailaddress, purpose)
-					_keys = GPGME::Key.find(:public, _mailaddress, [purpose])
-					_keys.each { |_key|
-						_key.uids.each { |_uid|
-							if _uid.email.downcase == _mailaddress.downcase then
-								return true
-							end
-						}
-					}
-					return false
-				end # def exactKeyAvailable?
-				
-				def getKeyFromKeyServer(_mailaddress)
-					_found = @hkp.search(_mailaddress)
-					if _found 
-						_found.each { |result|
-							_keyid = result[0]
-							@hkp.fetch_and_import(_keyid)
-						}
-					end
-				end # def getKeyFromKeyServer
-				
 				def saveGpgJournal(ref, options)
 					if options[:signed] || options[:encrypted] then
 						# logger.info "saveGpgJournal: Creating GpgJournal for #{ref.class}(#{ref.id}): s:#{options[:signed]},e:#{options[:encrypted]}"

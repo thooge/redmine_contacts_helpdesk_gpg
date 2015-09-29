@@ -37,6 +37,27 @@
     background-image: url(../images/email_signed_encrypted.png);
 }
 
+.recipient-check-key {
+	background-image: url(../images/page_refresh.png);
+	background-repeat: no-repeat;
+    background-size: 12px 12px;
+    padding-left: 14px;
+}
+
+.recipient-has-key {
+	background-image: url(../images/key.png);
+	background-repeat: no-repeat;
+    background-size: 12px 12px;
+    padding-left: 14px;
+}
+
+.recipient-has-no-key {
+	background-image: url(../images/delete.png);
+	background-repeat: no-repeat;
+    background-size: 12px 12px;
+    padding-left: 14px;
+}
+
 div#helpdesk_send_response_gpg_new {
 	padding: 3px 0 3px 180px;
 }
@@ -45,4 +66,8 @@ div#helpdesk_send_response_gpg_new label {
 	float: none;
 	margin-left: 0;
 	width: auto;
+}
+
+#gpg_decrypt_key {
+	width: 100%;
 }
