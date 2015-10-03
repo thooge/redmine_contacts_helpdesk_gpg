@@ -89,7 +89,7 @@
 	}
 	
 	function setupCheckForTags() {
-		$([$('#helpdesk_to'), $('#helpdesk_cc'), $('#helpdesk_cc')]).each(function() {
+		$([$('#helpdesk_to'), $('#helpdesk_cc'), $('#helpdesk_bcc')]).each(function() {
 			$(this).tagit({
 				afterTagAdded: function(evt, ui) {
 					if (!ui.duringInitialization & isGPGEncryptionEnabled()) {
