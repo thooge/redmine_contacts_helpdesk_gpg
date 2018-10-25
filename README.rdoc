@@ -16,7 +16,7 @@ Install these packages
 
 * gnupg_1.4.xx
 * optional: gpgsm (on some OS bundled with gnupg)
-* libgpgme11-dev (Name may vary depending on OS. It's the package providing executable 'gpgme-config')
+* libgpgme11-dev (Name may vary depending on OS. It's the package providing executable 'gpgme-config'. For Debian this is libgpgme-dev)
 
 === Install required GEMs
 
@@ -58,6 +58,18 @@ Cron jobs should be run as the same user running redmine (e.g. www-data)
   # delete expired keys from keystore on the 15th
   00 00 15 * * cd /var/opt/redmine && /usr/local/bin/rake RAILS_ENV=production redmine:plugins:helpdesk_gpg:remove_expired_keys
 
+== Usage
+
+In Administration use GPG Key management 
+
+* All keys are listed
+* Filter keys
+* Import new keys from file
+* Remove single key
+* Remove all expired keys
+* Refresh keys from keyserver
+
+In project configuration / settings / Mail Server settings a GPG key can be selected
 
 == Credits
 

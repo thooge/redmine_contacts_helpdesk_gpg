@@ -1,10 +1,10 @@
 de:
   label_ggp_setting: GPG Konfiguration
   label_gpg_keystore: GPG Schlüsselverwaltung
-  label_gpg_gpgme_api: GPGME Schnittstellenversi0on
-  label_gpg_protocols: GPGME Protokolle 
-  label_gpg_engines: GPGME Engines 
-  label_gpg_keystore_info: Schlüsselbund Informationen 
+  label_gpg_gpgme_api: GPGME Schnittstellenversion
+  label_gpg_protocols: GPGME Protokolle
+  label_gpg_engines: GPGME Engines
+  label_gpg_keystore_info: Schlüsselbund Informationen
   msg_gpg_keystore_info: "%{pub} öffentliche, %{priv} private Schlüssel gefunden"
 
   setting_gpg_keyrings_dir: Verzeichnis der Schlüsselbunde
